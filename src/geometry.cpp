@@ -7,7 +7,9 @@ Eigen::Vector3f triangle_normal(
     const Eigen::Vector3f& p1,
     const Eigen::Vector3f& p2)
 {
-    // ...
+    Eigen::Vector3f v01 = p1 - p0;
+    Eigen::Vector3f v02 = p2 - p0;
+    return v01.cross(v02).normalized();
 }
 
 Eigen::Vector3f triangle_circumcenter(
