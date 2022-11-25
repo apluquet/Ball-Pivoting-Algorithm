@@ -6,7 +6,7 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_FLAGS       "-Wall -Wextra -O3")
 set(CMAKE_CXX_FLAGS_DEBUG "-Wall -Wextra -g3")
 
-include_directories(eigen-3.4.0 src)
+include_directories(eigen src)
 
 add_executable(ball_pivoting
     src/main.cpp
