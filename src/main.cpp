@@ -124,56 +124,144 @@ int main(int argc, char *argv[])
         int pivot_point = pivot.value().first;
         Eigen::Vector3f pivot_ball_center = pivot.value().second;
 
-        // add new face
-        faces.push_back(Eigen::Vector3i(edge->from, pivot_point, edge->to));
-
         /////////////////////////////////////////////
         // update the front depending on the case
         /////////////////////////////////////////////
 
-        // case 2 to 5
-        if (status[pivot_point] != Status::FREE) continue;
+        if (status[pivot_point] == Status::INSIDE) {
+            std::cout << "pivot point is inside" << std::endl;
+            continue;
+        }
 
-        /////////////////////////////////////////////
-        // case 1: pivot_point is free
-        /////////////////////////////////////////////
+        // add new face
+        faces.push_back(Eigen::Vector3i(edge->from, pivot_point, edge->to));
 
-        // create new edges from edge->from to pivot and from pivot to edge->to
-        Edge *new_edge1 = new Edge();
-        new_edge1->from = edge->from;
-        new_edge1->to = pivot_point;
-        new_edge1->opp = edge->to;
-        new_edge1->ball_center = pivot_ball_center;
-        new_edge1->to_be_removed = false;
+        if (status[pivot_point] == Status::FREE) {
+            /////////////////////////////////////////////
+            // case 1: pivot_point is free
+            /////////////////////////////////////////////
 
-        Edge *new_edge2 = new Edge();
-        new_edge2->from = pivot_point;
-        new_edge2->to = edge->to;
-        new_edge2->opp = edge->from;
-        new_edge2->ball_center = pivot_ball_center;
-        new_edge2->to_be_removed = false;
+            // std::cout << "case 1" << std::endl;
 
-        // update prev and next pointers
-        new_edge1->prev = edge->prev;
-        new_edge1->next = new_edge2;
-        new_edge2->prev = new_edge1;
-        new_edge2->next = edge->next;
-        edge->prev->next = new_edge1;
-        edge->next->prev = new_edge2;
+            // create new edges from edge->from to pivot and from pivot to edge->to
+            Edge *new_edge1 = new Edge();
+            new_edge1->from = edge->from;
+            new_edge1->to = pivot_point;
+            new_edge1->opp = edge->to;
+            new_edge1->ball_center = pivot_ball_center;
+            new_edge1->to_be_removed = false;
 
-        // update outter_edges
-        outter_edges[new_edge1->from].push_back(new_edge1);
-        outter_edges[new_edge2->from].push_back(new_edge2);
+            Edge *new_edge2 = new Edge();
+            new_edge2->from = pivot_point;
+            new_edge2->to = edge->to;
+            new_edge2->opp = edge->from;
+            new_edge2->ball_center = pivot_ball_center;
+            new_edge2->to_be_removed = false;
 
-        // update status
-        status[new_edge1->to] = Status::FRONT;
+            // update prev and next pointers
+            new_edge1->prev = edge->prev;
+            new_edge1->next = new_edge2;
+            new_edge2->prev = new_edge1;
+            new_edge2->next = edge->next;
+            edge->prev->next = new_edge1;
+            edge->next->prev = new_edge2;
 
-        // update to_be_removed
-        // edge->to_be_removed = true;
+            // update outter_edges
+            outter_edges[new_edge1->from].push_back(new_edge1);
+            outter_edges[new_edge2->from].push_back(new_edge2);
 
-        // push new edges to the front
-        front.push(new_edge1);
-        front.push(new_edge2);
+            // update status
+            status[new_edge1->to] = Status::FRONT;
+
+            // update to_be_removed
+            // edge->to_be_removed = true;
+
+            // push new edges to the front
+            front.push(new_edge1);
+            front.push(new_edge2);
+        }
+        else if (pivot_point == edge->next->to && pivot_point == edge->prev->from) {
+            // case 2: pivot_point is on the front and is the next point of edge->next
+            // and the previous point of edge->prev
+
+            std::cout << "case 2" << std::endl;
+
+            // update status
+            status[edge->from] = Status::INSIDE;
+            status[edge->to] = Status::INSIDE;
+            status[pivot_point] = Status::INSIDE;
+
+            // update to_be_removed
+            edge->next->to_be_removed = true;
+            edge->prev->to_be_removed = true;
+        }
+        else if (pivot_point == edge->next->to) {
+            // case 3: pivot_point is front and is pointed to by edge->next
+
+            std::cout << "case 3" << std::endl;
+
+            // create new edge from edge->from to pivot
+            Edge *new_edge = new Edge();
+            new_edge->from = edge->from;
+            new_edge->to = pivot_point;
+            new_edge->opp = edge->to;
+            new_edge->ball_center = pivot_ball_center;
+            new_edge->to_be_removed = false;
+
+            // update prev and next pointers
+            new_edge->prev = edge->prev;
+            new_edge->next = edge->next->next;
+            edge->prev->next = new_edge;
+            edge->next->next->prev = new_edge;
+
+            // update outter_edges
+            outter_edges[new_edge->from].push_back(new_edge);
+
+            // update status
+            status[edge->to] = Status::INSIDE;
+
+            // update to_be_removed
+            edge->next->to_be_removed = true;
+
+            // push new edges to the front
+            front.push(new_edge);
+        }
+        else if (pivot_point == edge->prev->from) 
+        {
+            // case 4: pivot_point is front and is the beginning of edge->prev
+
+            std::cout << "case 4" << std::endl;
+
+            // create new edges from edge->from to pivot and from pivot to edge->to
+            Edge *new_edge = new Edge();
+            new_edge->from = pivot_point;
+            new_edge->to = edge->to;
+            new_edge->opp = edge->from;
+            new_edge->ball_center = pivot_ball_center;
+            new_edge->to_be_removed = false;
+
+            // update prev and next pointers
+            new_edge->prev = edge->prev->prev;
+            new_edge->next = edge->next;
+            edge->prev->prev->next = new_edge;
+            edge->next->prev = new_edge;
+
+            // update outter_edges
+            outter_edges[new_edge->from].push_back(new_edge);
+
+            // update status
+            status[edge->from] = Status::INSIDE;
+
+            // update to_be_removed
+            edge->prev->to_be_removed = true;
+
+            // push new edges to the front
+            front.push(new_edge);
+        }
+        else {
+            // Case 5
+            continue; //for now
+        }
     }
 
     tnp::save_obj("mesh.obj", points, faces);
