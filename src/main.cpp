@@ -103,6 +103,8 @@ int main(int argc, char *argv[])
     while (!front.empty()) {
         Edge *edge = front.top();
         front.pop();
+        // Remove edge from outter edges list to avoid founding it in another edge case 5
+        outter_edges[edge->from].erase(std::remove(outter_edges[edge->from].begin(), outter_edges[edge->from].end(), edge), outter_edges[edge->from].end());
 
         // if the edge is no longer needed, we remove it from the front and continue
         if (edge->to_be_removed) {
