@@ -131,7 +131,6 @@ int main(int argc, char *argv[])
         /////////////////////////////////////////////
 
         if (status[pivot_point] == Status::INSIDE) {
-            std::cout << "pivot point is inside" << std::endl;
             continue;
         }
 
@@ -143,8 +142,6 @@ int main(int argc, char *argv[])
             /////////////////////////////////////////////
             // case 1: pivot_point is free
             /////////////////////////////////////////////
-
-            // std::cout << "case 1" << std::endl;
 
             // create new edges from edge->from to pivot and from pivot to edge->to
             Edge *new_edge1 = new Edge();
@@ -176,9 +173,6 @@ int main(int argc, char *argv[])
             // update status
             status[new_edge1->to] = Status::FRONT;
 
-            // update to_be_removed
-            // edge->to_be_removed = true;
-
             // push new edges to the front
             front.push(new_edge1);
             front.push(new_edge2);
@@ -186,8 +180,6 @@ int main(int argc, char *argv[])
         else if (pivot_point == edge->next->to && pivot_point == edge->prev->from) {
             // case 2: pivot_point is on the front and is the next point of edge->next
             // and the previous point of edge->prev
-
-            std::cout << "case 2" << std::endl;
 
             // update status
             // We check the outter edges to avoid setting a point as inside if it is on another front loop
@@ -207,8 +199,6 @@ int main(int argc, char *argv[])
         }
         else if (pivot_point == edge->next->to) {
             // case 3: pivot_point is front and is pointed to by edge->next
-
-            std::cout << "case 3" << std::endl;
 
             // create new edge from edge->from to pivot
             Edge *new_edge = new Edge();
@@ -240,8 +230,6 @@ int main(int argc, char *argv[])
         {
             // case 4: pivot_point is front and is the beginning of edge->prev
 
-            std::cout << "case 4" << std::endl;
-
             // create new edges from edge->from to pivot and from pivot to edge->to
             Edge *new_edge = new Edge();
             new_edge->from = pivot_point;
@@ -271,8 +259,6 @@ int main(int argc, char *argv[])
         else {
             // case 5: pivot_point is front and is neither the beginning of edge->prev
             // nor the end of edge->next
-
-            std::cout << "case 5" << std::endl;
 
             // create new edges from edge->from to pivot and from pivot to edge->to
             Edge *new_edge1 = new Edge();
