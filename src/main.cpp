@@ -138,8 +138,6 @@ int main(int argc, char *argv[])
         // add new face
         faces.push_back(Eigen::Vector3i(edge->from, pivot_point, edge->to));
 
-        // remove edge from outter edges list to avoid founding it in another edge case 5
-        outter_edges[edge->from].erase(std::remove(outter_edges[edge->from].begin(), outter_edges[edge->from].end(), edge), outter_edges[edge->from].end());
 
         if (status[pivot_point] == Status::FREE) {
             /////////////////////////////////////////////
@@ -291,16 +289,26 @@ int main(int argc, char *argv[])
             new_edge2->ball_center = pivot_ball_center;
             new_edge2->to_be_removed = false;
 
+            // Find the edge that points to pivot_point and is part of the current front loop
+            Edge *edge_to_pivot = edge->next->next;
+            while (edge_to_pivot->to != pivot_point && edge_to_pivot != edge->prev) {
+                edge_to_pivot = edge_to_pivot->next;
+            }
+
+            if (edge_to_pivot == edge->prev) {
+                continue;
+            }
+
             // update prev and next pointers
             new_edge1->prev = edge->prev;
-            new_edge1->next = outter_edges[pivot_point][0];
-            new_edge2->prev = outter_edges[pivot_point][0]->prev;
+            new_edge1->next = edge_to_pivot->next;
+            new_edge2->prev = edge_to_pivot;
             new_edge2->next = edge->next;
-            // Update 2 before 1 to avoid losing outter_edges[pivot_point][0]->prev.
-            edge->next->prev = new_edge2;
-            outter_edges[pivot_point][0]->prev->next = new_edge2; // This
+            // Update 1 before 2 to avoid losing edge_to_pivot->next.
             edge->prev->next = new_edge1;
-            outter_edges[pivot_point][0]->prev = new_edge1; // before this
+            edge_to_pivot->next->prev = new_edge1; // This
+            edge->next->prev = new_edge2;
+            edge_to_pivot->next = new_edge2; // Before this
 
             // update outter_edges
             outter_edges[new_edge1->from].push_back(new_edge1);
@@ -310,6 +318,9 @@ int main(int argc, char *argv[])
             front.push(new_edge1);
             front.push(new_edge2);
         }
+
+        // remove edge from outter edges list to avoid founding it in another edge case 5
+        outter_edges[edge->from].erase(std::remove(outter_edges[edge->from].begin(), outter_edges[edge->from].end(), edge), outter_edges[edge->from].end());
     }
 
     save_obj("mesh.obj", points, faces);
