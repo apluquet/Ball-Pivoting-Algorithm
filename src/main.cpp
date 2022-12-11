@@ -258,10 +258,47 @@ int main(int argc, char *argv[])
             // push new edges to the front
             front.push(new_edge);
         }
+        /*
         else {
-            // Case 5
-            continue; //for now
+            // case 5: pivot_point is front and is neither the beginning of edge->prev
+            // nor the end of edge->next
+
+            std::cout << "case 5" << std::endl;
+
+            // create new edges from edge->from to pivot and from pivot to edge->to
+            Edge *new_edge1 = new Edge();
+            new_edge1->from = edge->from;
+            new_edge1->to = pivot_point;
+            new_edge1->opp = edge->to;
+            new_edge1->ball_center = pivot_ball_center;
+            new_edge1->to_be_removed = false;
+
+            Edge *new_edge2 = new Edge();
+            new_edge2->from = pivot_point;
+            new_edge2->to = edge->to;
+            new_edge2->opp = edge->from;
+            new_edge2->ball_center = pivot_ball_center;
+            new_edge2->to_be_removed = false;
+
+            // update prev and next pointers
+            new_edge1->prev = edge->prev;
+            new_edge1->next = outter_edges[pivot_point][0];
+            new_edge2->prev = outter_edges[pivot_point][0]->prev;
+            new_edge2->next = edge->next;
+            edge->prev->next = new_edge1;
+            outter_edges[pivot_point][0]->prev = new_edge1;
+            edge->next->prev = new_edge2;
+            outter_edges[pivot_point][0]->prev->next = new_edge2;
+
+            // update outter_edges
+            outter_edges[new_edge1->from].push_back(new_edge1);
+            outter_edges[new_edge2->from].push_back(new_edge2);
+
+            // push new edges to the front
+            front.push(new_edge1);
+            front.push(new_edge2);
         }
+        */
     }
 
     tnp::save_obj("mesh.obj", points, faces);
