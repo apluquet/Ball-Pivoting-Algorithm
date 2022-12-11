@@ -287,10 +287,11 @@ int main(int argc, char *argv[])
             new_edge1->next = outter_edges[pivot_point][0];
             new_edge2->prev = outter_edges[pivot_point][0]->prev;
             new_edge2->next = edge->next;
-            edge->prev->next = new_edge1;
-            outter_edges[pivot_point][0]->prev = new_edge1;
+            // Update 2 before 1 to avoid losing outter_edges[pivot_point][0]->prev.
             edge->next->prev = new_edge2;
-            outter_edges[pivot_point][0]->prev->next = new_edge2;
+            outter_edges[pivot_point][0]->prev->next = new_edge2; // This
+            edge->prev->next = new_edge1;
+            outter_edges[pivot_point][0]->prev = new_edge1; // before this
 
             // update outter_edges
             outter_edges[new_edge1->from].push_back(new_edge1);
