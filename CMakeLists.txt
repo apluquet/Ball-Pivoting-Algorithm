@@ -4,7 +4,7 @@ project(TNP-TP2)
 set(CMAKE_CXX_STANDARD 17)
 
 set(CMAKE_CXX_FLAGS       "-Wall -Wextra -O3")
-set(CMAKE_CXX_FLAGS_DEBUG "-Wall -Wextra -g3")
+set(CMAKE_CXX_FLAGS_DEBUG "-Wall -Wextra -g3 -O0")
 
 include_directories(eigen src)
 
