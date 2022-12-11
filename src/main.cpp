@@ -40,7 +40,8 @@ int main(int argc, char *argv[])
     }
     const auto filename = std::string(argv[1]);
 
-    float ball_radius = 0.25;
+    // float ball_radius = 0.25;
+    float ball_radius = 6;
     if(argc >= 3) {
         ball_radius = std::stof(argv[2]);
     }
@@ -258,7 +259,6 @@ int main(int argc, char *argv[])
             // push new edges to the front
             front.push(new_edge);
         }
-        /*
         else {
             // case 5: pivot_point is front and is neither the beginning of edge->prev
             // nor the end of edge->next
@@ -298,10 +298,9 @@ int main(int argc, char *argv[])
             front.push(new_edge1);
             front.push(new_edge2);
         }
-        */
     }
 
-    tnp::save_obj("mesh.obj", points, faces);
+    save_obj("mesh.obj", points, faces);
 
     return 0;
 }
