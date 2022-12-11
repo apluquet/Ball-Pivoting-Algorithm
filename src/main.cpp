@@ -190,9 +190,16 @@ int main(int argc, char *argv[])
             std::cout << "case 2" << std::endl;
 
             // update status
-            status[edge->from] = Status::INSIDE;
-            status[edge->to] = Status::INSIDE;
-            status[pivot_point] = Status::INSIDE;
+            // We check the outter edges to avoid setting a point as inside if it is on another front loop
+            // For edge->from, we already deleted the current edge from outter_edges so we check if the size is 0
+            if (outter_edges[edge->from].size() == 0)
+                status[edge->from] = Status::INSIDE;
+            // For edge->to and pivot_point, edge->next and edge->prev are still alive so they should have only 1 outter edge if they are not in another front loop
+            // We check if they are <= 1 (not == 1) because we might have already deleted them from the outter edges list and kept them alive (case where the pivot point is inside)
+            if (outter_edges[edge->to].size() <= 1)
+                status[edge->to] = Status::INSIDE;
+            if (outter_edges[pivot_point].size() <= 1)
+                status[pivot_point] = Status::INSIDE;
 
             // update to_be_removed
             edge->next->to_be_removed = true;
