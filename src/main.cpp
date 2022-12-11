@@ -103,11 +103,10 @@ int main(int argc, char *argv[])
     while (!front.empty()) {
         Edge *edge = front.top();
         front.pop();
-        // Remove edge from outter edges list to avoid founding it in another edge case 5
-        outter_edges[edge->from].erase(std::remove(outter_edges[edge->from].begin(), outter_edges[edge->from].end(), edge), outter_edges[edge->from].end());
 
         // if the edge is no longer needed, we remove it from the front and continue
         if (edge->to_be_removed) {
+            outter_edges[edge->from].erase(std::remove(outter_edges[edge->from].begin(), outter_edges[edge->from].end(), edge), outter_edges[edge->from].end());
             delete edge;
             continue;
         }
@@ -138,6 +137,9 @@ int main(int argc, char *argv[])
 
         // add new face
         faces.push_back(Eigen::Vector3i(edge->from, pivot_point, edge->to));
+
+        // remove edge from outter edges list to avoid founding it in another edge case 5
+        outter_edges[edge->from].erase(std::remove(outter_edges[edge->from].begin(), outter_edges[edge->from].end(), edge), outter_edges[edge->from].end());
 
         if (status[pivot_point] == Status::FREE) {
             /////////////////////////////////////////////
